@@ -20,28 +20,29 @@ export class CommentPage extends Component <{},States> {
     public render(): ReactNode {
         return (
             <div className="div-comments-page" style={{display:"inline-grid"}}>
-                <TextField label="Nickname"
+                <TextField label="Имя"
                 value={this.state.author}
                 onChange={(event)=>this.changeName(event.target.value)}/>
-                <TextField label="Comment"
+                <TextField label="Комментарий"
                 value={this.state.comment}
                 onChange={(event)=>this.changeComment(event.target.value)}/>
                 <Button onClick={()=> {this.handleSubmit()}}>Send Comment</Button>
             </div>
         )
     }
+    //валидация поля Имя, устанавливаем в поле Имя значение, введённое пользователем
     private changeName(value:string){
         this.validateName(value)
         this.setState({author:value})
     }
-
+    //валидация поля Имя, устанавливаем в поле Имя значение, введённое пользователем
     private changeComment(value:string){
         this.validateComment(value)
         this.setState({comment:value})
     }
-
+    //для валидации поля Имя
     private validateName(name:string){
-        if(name.length>2){
+        if(name.length>0 && name.length<=300){
             this.setState({validName: true});
             return true
         }
@@ -50,8 +51,9 @@ export class CommentPage extends Component <{},States> {
         }
        
     }
+    //для валидации поля Комментарий
     private validateComment(comment:string){
-        if(comment.length>2){
+        if(comment.length>0 && comment.length <=1000 ){
             this.setState({validComment: true});
             return true
         }
@@ -59,15 +61,15 @@ export class CommentPage extends Component <{},States> {
             return false
         }
     }
-
+    //сообщение об ошибке при валидации
     handleSubmit() {
         if(this.state.validName === false){
-            console.log("NOT Veryficated")
-            alert("Поле имя не должно быть пустым и не превышать 300 символов")
+            console.log("NOT Validated")
+            alert("Поле Имя не должно быть пустым и не превышать 300 символов")
         }
         if(this.state.validComment===false){
-            console.log("NOT Veryficated")
-            alert("Поле комменатрий не должно быть пустым и не превышать 1000 символов")
+            console.log("NOT Validated")
+            alert("Поле Комменатрий не должно быть пустым и не превышать 1000 символов")
         }
 
     }
