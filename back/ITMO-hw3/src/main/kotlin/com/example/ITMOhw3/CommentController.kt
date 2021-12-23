@@ -7,16 +7,15 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin
 @RestController
 class CommentController {
-
+    val commentsList = mutableListOf<CommentModel>()
     @GetMapping("/allComments")
     fun allComments(): MutableList<CommentModel> {
-        // ... //
-        return mutableListOf()
+        return commentsList;
     }
 
     @PostMapping("/addComment")
     fun addComment(@RequestBody comment: CommentModel): ResponseEntity<Any> {
-        // ... //
+        commentsList.add(CommentModel(comment.author, comment.comment))
         return ResponseEntity(HttpStatus.ACCEPTED)
     }
 }
