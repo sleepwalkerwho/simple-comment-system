@@ -25,36 +25,36 @@ export class CommentPage extends Component <{},States> {
     }
 
     async componentDidMount():Promise<void>{
-
+        new Services().getComments().then((res)=>{this.setState({name:(res)})}).catch(err=>{console.error(err)})
         setInterval(() => {
             new Services().getComments().then((res)=>{this.setState({name:(res)})}).catch(err=>{console.error(err)})
           }, 5000)
-        for (var i = 0; i < this.state.name.length; i++) {
-            console.log(this.state.name[i].author);
-            console.log(this.state.name[i].comment);
-
-    }
-}
+        }
 
 
     public render(): ReactNode {
         let res = this.state.name.map(function(item) {
-            return <div>
-               <li>Author: {item.author}</li>
-               <li>Comment: {item.comment}</li>
-               </div>
+            return <ul>
+               <li className="list-01">{item.author}</li>
+               <li className="list-02">{item.comment}</li>
+               </ul>
          });
         return (
             <div className="div-comments-page" style={{display:"inline-grid"}}>
+                <span style={{textAlign:"center"}}><h1>Comment System</h1></span>
                 <TextField label="Имя"
+                margin="normal"
                 value={this.state.author}
                 onChange={(event)=>this.changeName(event.target.value)}/>
                 <TextField 
-                variant="outlined" rows={5}
                 label="Комментарий"
+                variant="outlined" placeholder="Введите комментарий. . ." multiline rows={5} rowsMax={10}
+                margin="normal"
                 value={this.state.comment}
                 onChange={(event)=>this.changeComment(event.target.value)}/>
-                <Button onClick={()=> {this.handleSubmit()}}>Отправить комменатрий</Button>
+                <Button onClick={()=> {this.handleSubmit()}}
+                color="inherit">Отправить комментарий</Button>
+                <div style={{textAlign:"center"}}><h2>Комментарии:</h2></div>
                 <div>{res}</div>
             </div>
         )
