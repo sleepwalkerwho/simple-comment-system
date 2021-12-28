@@ -10,30 +10,34 @@ interface ServerData{
 }
 
 interface States{
-    name:ServerData[];
+    ServerData:ServerData[];
     author:string;
     comment:string;
-    validName:boolean;
-    validComment:boolean;
+    timer:any;
 }
 
 
 export class CommentPage extends Component <{},States> {
+    readonly service: Services = new Services()
     constructor(props:any) {
         super(props);
-        this.state = {name: [], author: "", comment: "", validName:false,validComment:false}
+        this.state = {ServerData: [], author: "", comment: "", timer:""}
     }
-
+    private interval:any
     async componentDidMount():Promise<void>{
-        new Services().getComments().then((res)=>{this.setState({name:(res)})}).catch(err=>{console.error(err)})
-        setInterval(() => {
-            new Services().getComments().then((res)=>{this.setState({name:(res)})}).catch(err=>{console.error(err)})
+    //todo
+        this.service.getComments().then((res)=>{this.setState({ServerData:(res)})}).catch(err=>{console.error(err)})
+        this.interval = setInterval(() => {
+            this.service.getComments().then((res)=>{this.setState({ServerData:(res)})}).catch(err=>{console.error(err)})
           }, 5000)
         }
-
+        
+    componentWillUnmount(){
+        clearInterval(this.interval)
+    }
 
     public render(): ReactNode {
-        let res = this.state.name.map(function(item) {
+        let res = this.state.ServerData.map(function(item) {
             return <ul>
                <li className="list-01">{item.author}</li>
                <li className="list-02">{item.comment}</li>
@@ -61,21 +65,18 @@ export class CommentPage extends Component <{},States> {
     }
     //валидация поля Имя, устанавливаем в поле Имя значение, введённое пользователем
     private changeName(value:string){
-        this.validateName(value)
         this.setState({author:value})
     }
     //валидация поля Имя, устанавливаем в поле Имя значение, введённое пользователем
     private changeComment(value:string){
-        this.validateComment(value)
         this.setState({comment:value})
     }
     //для валидации поля Имя
     private validateName(name:string){
         if(name.length>0 && name.length<=300){
-            this.setState({validName: true});
             return true
         }
-        else if (name.length===0){
+        else {
             return false
         }
        
@@ -83,30 +84,31 @@ export class CommentPage extends Component <{},States> {
     //для валидации поля Комментарий
     private validateComment(comment:string){
         if(comment.length>0 && comment.length <=1000 ){
-            this.setState({validComment: true});
             return true
         }
-        else if (comment.length===0) {
+        else {
             return false
         }
     }
     //сообщение об ошибке при валидации
     handleSubmit() {
-        if(this.state.validName === false){
+        if(!this.validateName(this.state.author)){
             console.log("NOT Validated")
             alert("Поле Имя не должно быть пустым и не превышать 300 символов")
         }
-        if(this.state.validComment===false){
+        if(this.validateComment(this.state.comment)===false){
             console.log("NOT Validated")
             alert("Поле Комменатрий не должно быть пустым и не превышать 1000 символов")
         }
         else
-            {
-                this.postRequest()
-            }
+        { 
+            this.postRequest()
+            this.setState({author:"",comment:""})
+        }
 
     }
     async postRequest(){
         await axios.post("http://localhost:8080/addComment", {author: this.state.author, comment: this.state.comment}).then(res=>console.log(res))
     }
+
 }
